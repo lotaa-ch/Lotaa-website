@@ -1,0 +1,142 @@
+# Lotaa-website
+First live HTML website 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Farm Simulator</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eecf6d;
+            text-align: center;
+            padding: 20px;
+        }
+        .game-container {
+            background-color: #fffde7;
+            max-width: 500px;
+            margin: auto;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0px 8px 16px rgba(0,0,0,0.2);
+            border: 4px solid #8d6e63;
+        }
+        h1 { color: #5d4037; }
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #3e2723;
+            background: #fff9c4;
+            padding: 10px;
+            border-radius: 8px;
+        }
+        .farm-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .plot {
+            background-color: #8d6e63;
+            color: white;
+            padding: 30px 10px;
+            font-size: 1.1rem;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 2px solid #5d4037;
+            transition: background 0.2s;
+        }
+        .plot:hover { background-color: #705247; }
+        .plot.ready { background-color: #4caf50; border-color: #2e7d32;}
+        .shop-btn {
+            background-color: #ff9800;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .shop-btn:hover { background-color: #f57c00; }
+    </style>
+</head>
+<body>
+
+<div class="game-container">
+    <h1>🌾 My Mini Hay Day</h1>
+    
+    <div class="stats">
+        <div>Coins: <span id="coins">10</span> 🪙</div>
+        <div>Wheat: <span id="inventory">0</span> 🌾</div>
+    </div>
+
+    <div class="farm-grid">
+        <div class="plot" id="plot1" onclick="interactPlot('plot1')">Empty Soil</div>
+        <div class="plot" id="plot2" onclick="interactPlot('plot2')">Empty Soil</div>
+    </div>
+
+    <button class="shop-btn" onclick="sellWheat()">Sell All Wheat (+5 Coins each)</button>
+</div>
+
+<script>
+    let coins = 10;
+    let wheatInventory = 0;
+    
+    // Track status of plots: "empty", "growing", or "ready"
+    let plots = {
+        plot1: { status: "empty" },
+        plot2: { status: "empty" }
+    };
+
+    function updateUI() {
+        document.getElementById('coins').innerText = coins;
+        document.getElementById('inventory').innerText = wheatInventory;
+    }
+
+    function interactPlot(plotId) {
+        let plot = plots[plotId];
+        let plotElement = document.getElementById(plotId);
+
+        if (plot.status === "empty") {
+            if (coins >= 2) {
+                coins -= 2;
+                plot.status = "growing";
+                plotElement.innerText = "🌱 Growing...";
+                updateUI();
+
+                // Wheat takes 3 seconds to mature
+                setTimeout(() => {
+                    plot.status = "ready";
+                    plotElement.innerText = "🌾 Ready to Harvest!";
+                    plotElement.classList.add('ready');
+                }, 3000);
+            } else {
+                alert("Not enough coins to buy seeds! Sell some wheat first.");
+            }
+        } 
+        else if (plot.status === "ready") {
+            plot.status = "empty";
+            plotElement.innerText = "Empty Soil";
+            plotElement.classList.remove('ready');
+            wheatInventory += 2; // Harvest yields 2 crops
+            updateUI();
+        }
+    }
+
+    function sellWheat() {
+        if (wheatInventory > 0) {
+            coins += wheatInventory * 5;
+            wheatInventory = 0;
+            updateUI();
+        } else {
+            alert("You don't have any wheat to sell!");
+        }
+    }
+</script>
+
+</body>
+</html>
